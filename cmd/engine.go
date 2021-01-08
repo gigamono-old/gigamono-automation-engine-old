@@ -1,21 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"github.com/sageflow/sageutils"
 	"github.com/sageflow/sagedb"
+	"github.com/sageflow/sageengine"
+	"github.com/sageflow/sageutils"
 )
 
 func main() {
-	sageutils.SetStatusLogFile() // Set where status log output goes.
+	// Set up log status file and load .env file.
+	sageutils.SetStatusLogFile()
+	sageutils.LoadEnvFile()
 
-	sageutils.LoadEnvFile() // Load env file.
+	// Connect to database.
+	db := sagedb.Connect()
 
-	// processArgs() // Handle CLI arguments.
+	// TODO: Get from .env with a default value.
+	const port = "3001"
 
-	db := sagedb.Connect() // Set up database.
-
-	defer db.Close() // Close database on exit.
-
-	fmt.Print("Engine started")
+	// Start a workflow engine gRPC server.
+	engine := sageengine.NewEngine(db)
+	engine.Start(port)
 }

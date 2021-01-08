@@ -1,0 +1,24 @@
+syntax = "proto3";
+package engine;
+option go_package = "github.com/sageflow/sageengine/grpc";
+
+message UUID {
+    bytes value = 1;
+}
+
+message Context {
+   UUID user_id = 1;
+}
+
+message EngineResponse {
+    string status = 1;
+}
+
+message EngineRequest {
+    UUID    workflow_id = 1;
+    Context context     = 2;
+}
+
+service EngineService {
+    rpc ExecuteWorkflow(EngineRequest) returns (EngineResponse);
+}
