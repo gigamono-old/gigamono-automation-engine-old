@@ -1,23 +1,19 @@
 package engine
 
+import (
+	"github.com/sageflow/sageflow/pkg/database/models"
+	"github.com/sageflow/sageflow/pkg/configs"
+)
+
 // Workflow represents a runnable workflow.
 type Workflow struct {
-	ID       UUID
-	Version  uint
-	Metadata struct {
-		Name              string
-		ExecutionContexts []ExecutionContext `mapstructure:"execution_contexts"`
-	}
-	Tasks []Task
+	Model          *models.Workflow
+	WorkflowConfig *configs.WorkflowConfig
 }
 
 // Execute starts the execution of workflow run.
-func (workflow *Workflow) Execute(context *Context) error {
+func (workflow *Workflow) Execute() error {
 	// TODO
 	return nil
 }
 
-func (task *Task) execute(workflow *Workflow, context *Context) error {
-	// TODO
-	return nil
-}

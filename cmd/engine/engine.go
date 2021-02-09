@@ -1,22 +1,22 @@
 package main
 
 import (
-	"github.com/sageflow/sagedb/pkg/database"
-	"github.com/sageflow/sageutils/pkg/envs"
-	"github.com/sageflow/sageutils/pkg/logs"
+	"github.com/sageflow/sageflow/pkg/database"
+	"github.com/sageflow/sageflow/pkg/envs"
+	"github.com/sageflow/sageflow/pkg/logs"
 
 	"github.com/sageflow/sageengine/pkg/engine"
 )
 
 func main() {
 	// Set up log status file and load .env file.
-	logs.SetStatusLogFile()
-	envs.LoadEnvFile()
+	logs.SetStatusLogFile() // TODO. logs.SetStatusLogFile(config.Logging.Status.Filepath)
+	envs.LoadEnvFile()      // TODO. Remove!
 
 	// Connect to database.
-	db := database.Connect()
+	db := database.Connect() // TODO. database.Connect(config.db)
 
 	// Start a workflow engine gRPC server.
-	eng := engine.NewEngine(db)
-	eng.Listen("3001") // TODO: Get from .env with a default value.
+	eng := engine.NewEngine(db) // TODO. engine.NewEngine(db, config)
+	eng.Listen("3001") // TODO. database.Connect(config.Server.Engine.Port)
 }

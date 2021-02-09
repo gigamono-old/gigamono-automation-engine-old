@@ -1,19 +1,18 @@
 package engine
 
 import (
+	"context"
 	"fmt"
 	"net"
-	"reflect"
-	"strings"
 
-	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
-	"github.com/spf13/viper"
+	"github.com/sageflow/sageengine/internal/proto"
+
+	"github.com/gofrs/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
-	"github.com/sageflow/sagedb/pkg/database"
-	"github.com/sageflow/sagedb/pkg/models"
-	"github.com/sageflow/sageutils/pkg/configs"
+	"github.com/sageflow/sageflow/pkg/database"
+	"github.com/sageflow/sageflow/pkg/database/models"
 )
 
 // Engine represents an engine instance.
@@ -21,17 +20,17 @@ import (
 // Used as an API, Engine expects an API DB. API and Auth servers are optional.
 // If there is no authorisation with the Auth server, the API does not require a Context as well.
 type Engine struct {
-	ID      uuid.UUID
-	AppPool []App
-	Port    string
+	Model *models.Engine
+	Port  string
+	DB    *database.DB
 }
 
 // NewEngine creates a new workflow engine.
 func NewEngine(db *database.DB) Engine {
 	// Create engine in the database.
-	engine := models.CreateEngine(db)
+	engine := db.CreateEngine()
 	return Engine{
-		ID: engine.ID,
+		Model: engine,
 	}
 }
 
@@ -45,74 +44,28 @@ func (engine *Engine) Listen(port string) error {
 		return err
 	}
 
-	// Create a gRPC server that uses TCP listener.
-	grpcServer := grpc.NewServer()
-	if err := grpcServer.Serve(listener); err != nil {
-		return err
+	grpcServer := grpc.NewServer() // Create a gRPC server.
+
+	// Register gRPC service.
+	proto.RegisterEngineServiceServer(grpcServer, engine)
+	reflection.Register(grpcServer)
+
+	return grpcServer.Serve(listener) // Listen for requests.
+}
+
+// SayHello says Hello
+func (engine *Engine) SayHello(ctx context.Context, msg *proto.Message) (*proto.Message, error) {
+	engineMsg := "Engine replies: " + msg.Content
+	fmt.Println(engineMsg)
+	response := proto.Message{
+		Content: engineMsg,
 	}
-
-	// Registers a gRPC client.
-
-	// Accept ExecuteWorkflow call request from clients.
-
-	// Execute(workflow Workflow, context Context) // engine.proto
-
-	// If it happens.
-
-	// Gets json from the db
-
-	// Call engine.ExecuteWorkflowJSON
-
-	return nil
+	return &response, nil
 }
 
 // ExecuteWorkflow takes a workflow object and executes it.
-func (engine *Engine) ExecuteWorkflow(workflow *Workflow, context *Context) error {
-	// Starts workflow on a separate goroutine
-	go workflow.Execute(context)
-
-	// Wait workflow response. Return any error to user
-
-	// Runs workflow again based on specific time interval.
-
+func (engine *Engine) ExecuteWorkflow(workflowID uuid.UUID) error {
+	// If it exists.
+	// Execute workflow
 	return nil
-}
-
-// ExecuteWorkflowString submits a workflow string in the following format (JSON, TOML, YAML) for execution.
-func (engine *Engine) ExecuteWorkflowString(format configs.ConfigFormat, str string, context *Context) error {
-	app := App{}
-	reader := strings.NewReader(str)
-
-	// Set viper to parse format.
-	viper.SetConfigType(format.String())
-	viper.ReadConfig(reader)
-
-	// Convert format into Workflow object.
-	if err := viper.Unmarshal(&app, getCustomDecoder()); err != nil {
-		return err
-	}
-
-	fmt.Println("\n=========== " + format.String() + " =============")
-	fmt.Println("\nWorkflow object =", app)
-
-	return engine.ExecuteWorkflow(&Workflow{}, context)
-}
-
-func getCustomDecoder() viper.DecoderConfigOption {
-	return viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
-		func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
-			switch t {
-			case reflect.TypeOf(UUID{}):
-				parsedID, err := uuid.Parse(data.(string))
-				if err != nil {
-					return UUID{}, err
-				}
-				id := UUID(parsedID)
-				return id, nil
-			}
-			return data, nil
-		},
-		mapstructure.StringToTimeDurationHookFunc(),
-		mapstructure.StringToSliceHookFunc(","),
-	))
 }
