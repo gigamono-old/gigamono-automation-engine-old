@@ -5,7 +5,7 @@ import (
 	"github.com/sageflow/sageflow/pkg/envs"
 	"github.com/sageflow/sageflow/pkg/logs"
 
-	"github.com/sageflow/sageengine/pkg/engine"
+	"github.com/sageflow/sageengine/pkg/server"
 )
 
 func main() {
@@ -17,6 +17,6 @@ func main() {
 	db := database.Connect() // TODO. database.Connect(config.db)
 
 	// Start a workflow engine gRPC server.
-	eng := engine.NewEngine(db) // TODO. engine.NewEngine(db, config)
+	eng := server.NewEngineServer(db) // TODO. engine.NewEngine(db, config)
 	eng.Listen("3001") // TODO. database.Connect(config.Server.Engine.Port)
 }
