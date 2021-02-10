@@ -1,22 +1,23 @@
 package main
 
 import (
-	"github.com/sageflow/sageflow/pkg/database"
-	"github.com/sageflow/sageflow/pkg/envs"
+	"github.com/sageflow/sageflow/pkg/inits"
 	"github.com/sageflow/sageflow/pkg/logs"
 
 	"github.com/sageflow/sageengine/pkg/server"
 )
 
 func main() {
-	// Set up log status file and load .env file.
-	logs.SetStatusLogFile() // TODO. logs.SetStatusLogFile(config.Logging.Status.Filepath)
-	envs.LoadEnvFile()      // TODO. Remove!
+	// Initialises app.
+	app, err := inits.NewApp("Resource")
+	if err != nil {
+		logs.FmtPrintln("Unable to connect to database; Database is needed to continue: ", err)
+		return
+	}
 
-	// Connect to database.
-	db := database.Connect() // TODO. database.Connect(config.db)
-
-	// Start a workflow engine gRPC server.
-	eng := server.NewEngineServer(db) // TODO. engine.NewEngine(db, config)
-	eng.Listen("3001") // TODO. database.Connect(config.Server.Engine.Port)
+	// Start an engine gRPC server.
+	server := server.NewEngineServer(app)
+	if err := server.Listen(); err != nil {
+		logs.FmtPrintln("Unable to listen on port specified:", err)
+	}
 }

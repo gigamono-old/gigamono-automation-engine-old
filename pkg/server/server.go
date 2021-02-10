@@ -8,30 +8,29 @@ import (
 	"github.com/sageflow/sageengine/internal/proto"
 	"github.com/sageflow/sageengine/pkg/engine"
 
-	"github.com/sageflow/sageflow/pkg/database"
+	"github.com/sageflow/sageflow/pkg/inits"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 // EngineServer is a grpc server with an engine.
 type EngineServer struct {
-	Port   string
+	inits.App
 	Engine engine.Engine
 }
 
 // NewEngineServer creates a new server instance.
-func NewEngineServer(db *database.DB) EngineServer {
+func NewEngineServer(app inits.App) EngineServer {
 	return EngineServer{
-		Engine: engine.NewEngine(db),
+		App:    app,
+		Engine: engine.NewEngine(&app.DB),
 	}
 }
 
 // Listen starts a new gRPC server that listens on specified port.
-func (server *EngineServer) Listen(port string) error {
-	server.Port = port // Set port.
-
+func (server *EngineServer) Listen() error {
 	// Listen on port using TCP.
-	listener, err := net.Listen("tcp", ":"+server.Port)
+	listener, err := net.Listen("tcp", fmt.Sprint(":", server.Config.Server.Engine.Port))
 	if err != nil {
 		return err
 	}

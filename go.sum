@@ -318,6 +318,7 @@ github.com/sageflow/sagedb v0.0.0-20210116083751-8757e93b9d74 h1:6NIdcP2nwlIwxpA
 github.com/sageflow/sagedb v0.0.0-20210116121843-2d65a6a1864f h1:cC+/rCCatRy4RTpzkGecDyiH9z29u9gRXZRqVsnJzVI=
 github.com/sageflow/sagedb v0.0.0-20210116121843-2d65a6a1864f/go.mod h1:czSwdVY4O01z+MM/i/MDCj2uxZamsE+9v386olhLdIk=
 github.com/sageflow/sagedb v0.0.0-20210117193554-834c3eaadd58 h1:D0VLDONY0Io0Br9Wo26A2H97x7de3/ZHxbirLwz1ZKA=
+github.com/sageflow/sagedb v0.0.0-20210117193554-834c3eaadd58/go.mod h1:czSwdVY4O01z+MM/i/MDCj2uxZamsE+9v386olhLdIk=
 github.com/sageflow/sageengine v0.0.0-20210101230317-93f1611259a7 h1:zX8VBs29vxt/1LeBvUBT551e8iNpMkMyU6nrUwMtMp8=
 github.com/sageflow/sageflow v0.0.0-20210108233356-e663f3625227 h1:TKZuq12NGm/d2ri88fwzGF/co66nH2BcscwNUZDlrEE=
 github.com/sageflow/sageflow v0.0.0-20210117194839-f1b2d99c8e52 h1:FBfRf0selO//1F2pruPVGkBt4ts+PbqVADKqzxjWddM=
