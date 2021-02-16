@@ -20,11 +20,15 @@ type EngineServer struct {
 }
 
 // NewEngineServer creates a new server instance.
-func NewEngineServer(app inits.App) EngineServer {
+func NewEngineServer(app inits.App) (EngineServer, error) {
+	eng, err := engine.NewEngine(&app)
+	if err != nil {
+		return EngineServer{}, err
+	}
 	return EngineServer{
 		App:    app,
-		Engine: engine.NewEngine(&app.DB),
-	}
+		Engine: eng,
+	}, nil
 }
 
 // Listen starts a new gRPC server that listens on specified port.

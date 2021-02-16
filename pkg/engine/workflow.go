@@ -1,8 +1,8 @@
 package engine
 
 import (
-	"github.com/sageflow/sageflow/pkg/database/models"
 	"github.com/sageflow/sageflow/pkg/configs"
+	"github.com/sageflow/sageflow/pkg/database/models"
 )
 
 // Workflow represents a runnable workflow.
@@ -16,4 +16,3 @@ func (workflow *Workflow) Execute() error {
 	// TODO
 	return nil
 }
-

@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.1.3
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/sageflow/sagedb v0.0.0-20210117193554-834c3eaadd58
-	github.com/sageflow/sageflow v0.0.0-20210108233356-e663f3625227
+	github.com/sageflow/sageflow v0.0.0-20210213140648-cdbbdd211183
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/viper v1.7.1
 	google.golang.org/grpc v1.34.0
