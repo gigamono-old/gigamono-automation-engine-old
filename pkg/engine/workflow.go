@@ -2,7 +2,7 @@ package engine
 
 import (
 	"github.com/sageflow/sageflow/pkg/configs"
-	"github.com/sageflow/sageflow/pkg/database/models"
+	models "github.com/sageflow/sageflow/pkg/database/models/resource"
 )
 
 // Workflow represents a runnable workflow.

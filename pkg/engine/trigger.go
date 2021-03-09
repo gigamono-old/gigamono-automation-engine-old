@@ -5,14 +5,13 @@ type Trigger struct {
 	Sub Subscription
 }
 
-
 // Subscription represent a subscription type that can send payload to its subscribers.
 type Subscription interface {
 }
 
 // RESTHook is a webhook with subscription management ability.
 type RESTHook struct {
-	CallbackURL string
+	CallbackURL  string
 	ClientDomain string
 }
 

@@ -3,7 +3,8 @@ package engine
 import (
 	"github.com/gofrs/uuid"
 
-	"github.com/sageflow/sageflow/pkg/database/models"
+	controllers "github.com/sageflow/sageflow/pkg/database/controllers/resource"
+	models "github.com/sageflow/sageflow/pkg/database/models/resource"
 	"github.com/sageflow/sageflow/pkg/inits"
 )
 
@@ -16,7 +17,7 @@ type Engine struct {
 // NewEngine creates a new workflow engine.
 func NewEngine(app *inits.App) (Engine, error) {
 	// Create engine in the database.
-	engine, err := app.DB.CreateEngine()
+	engine, err := controllers.CreateEngine(&app.DB)
 	if err != nil {
 		return Engine{}, err
 	}

@@ -11,7 +11,7 @@ func main() {
 	// Initialises app.
 	app, err := inits.NewApp("Resource")
 	if err != nil {
-		logs.FmtPrintln(err)
+		logs.FmtPrintln("Unable to initialize engine:", err)
 		return
 	}
 

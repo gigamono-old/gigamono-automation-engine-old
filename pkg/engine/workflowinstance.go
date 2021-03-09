@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/sageflow/sageflow/pkg/database/models"
+	models "github.com/sageflow/sageflow/pkg/database/models/resource"
 )
 
 // WorkflowInstance represents a running, paused or stopped workflow instance.

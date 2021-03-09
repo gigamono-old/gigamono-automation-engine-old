@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
 
 	"github.com/sageflow/sageengine/internal/proto"
 	"github.com/sageflow/sageengine/pkg/engine"
@@ -34,7 +35,7 @@ func NewEngineServer(app inits.App) (EngineServer, error) {
 // Listen starts a new gRPC server that listens on specified port.
 func (server *EngineServer) Listen() error {
 	// Listen on port using TCP.
-	listener, err := net.Listen("tcp", fmt.Sprint(":", server.Config.Server.Engine.Port))
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(server.Config.Server.Engine.Port))
 	if err != nil {
 		return err
 	}
