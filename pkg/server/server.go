@@ -6,8 +6,8 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/sageflow/sageengine/internal/proto"
 	"github.com/sageflow/sageengine/pkg/engine"
+	"github.com/sageflow/sageflow/pkg/services/proto"
 
 	"github.com/sageflow/sageflow/pkg/inits"
 	"google.golang.org/grpc"
@@ -50,10 +50,10 @@ func (server *EngineServer) Listen() error {
 }
 
 // SayHello says Hello
-func (server *EngineServer) SayHello(ctx context.Context, msg *proto.Message) (*proto.Message, error) {
+func (server *EngineServer) SayHello(ctx context.Context, msg *proto.EngineMessage) (*proto.EngineMessage, error) {
 	engineMsg := "Engine replies: " + msg.Content
 	fmt.Println(engineMsg)
-	response := proto.Message{
+	response := proto.EngineMessage{
 		Content: engineMsg,
 	}
 	return &response, nil
