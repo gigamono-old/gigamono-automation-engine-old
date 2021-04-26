@@ -8,28 +8,28 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 )
 
-// Engine represents an engine instance.
-type Engine struct {
+// WorkflowEngine represents an engine instance.
+type WorkflowEngine struct {
 	*inits.App
 	Model models.Engine
 }
 
-// NewEngine creates a new workflow engine.
-func NewEngine(app *inits.App) (Engine, error) {
+// NewWorkflowEngine creates a new workflow engine.
+func NewWorkflowEngine(app *inits.App) (WorkflowEngine, error) {
 	// Create engine in the database.
 	engine, err := controllers.CreateEngine(&app.DB)
 	if err != nil {
-		return Engine{}, err
+		return WorkflowEngine{}, err
 	}
 
-	return Engine{
+	return WorkflowEngine{
 		App:   app,
 		Model: engine,
 	}, nil
 }
 
 // ExecuteWorkflow takes a workflow object and executes it.
-func (engine *Engine) ExecuteWorkflow(workflowID uuid.UUID) error {
+func (engine *WorkflowEngine) ExecuteWorkflow(workflowID uuid.UUID) error {
 	// If it exists.
 
 	// Execute workflow

@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Start an engine gRPC server.
-	server, err := server.NewEngineServer(app)
+	server, err := server.NewWorkflowEngineServer(app)
 	if err != nil {
 		logs.FmtPrintln("Unable to create engine server:", err)
 	}

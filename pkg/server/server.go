@@ -13,28 +13,28 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// EngineServer is a grpc server with an engine.
-type EngineServer struct {
+// WorkflowEngineServer is a grpc server with an engine.
+type WorkflowEngineServer struct {
 	inits.App
-	Engine engine.Engine
+	Engine engine.WorkflowEngine
 }
 
-// NewEngineServer creates a new server instance.
-func NewEngineServer(app inits.App) (EngineServer, error) {
-	eng, err := engine.NewEngine(&app)
+// NewWorkflowEngineServer creates a new server instance.
+func NewWorkflowEngineServer(app inits.App) (WorkflowEngineServer, error) {
+	eng, err := engine.NewWorkflowEngine(&app)
 	if err != nil {
-		return EngineServer{}, err
+		return WorkflowEngineServer{}, err
 	}
-	return EngineServer{
+	return WorkflowEngineServer{
 		App:    app,
 		Engine: eng,
 	}, nil
 }
 
 // Listen starts a new gRPC server that listens on specified port.
-func (server *EngineServer) Listen() error {
+func (server *WorkflowEngineServer) Listen() error {
 	// Listen on port using TCP.
-	listener, err := net.Listen("tcp", fmt.Sprint(":", server.Config.Services.Types.Engine.Port))
+	listener, err := net.Listen("tcp", fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.Port))
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (server *EngineServer) Listen() error {
 }
 
 // SayHello says Hello
-func (server *EngineServer) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
+func (server *WorkflowEngineServer) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
 	engineMsg := "Engine replies: " + msg.Content
 	fmt.Println(engineMsg)
 	response := generated.Message{
