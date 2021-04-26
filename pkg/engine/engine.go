@@ -3,9 +3,9 @@ package engine
 import (
 	"github.com/gofrs/uuid"
 
-	controllers "github.com/sageflow/sageflow/pkg/database/controllers/resource"
-	models "github.com/sageflow/sageflow/pkg/database/models/resource"
-	"github.com/sageflow/sageflow/pkg/inits"
+	controllers "github.com/gigamono/gigamono/pkg/database/controllers/resource"
+	models "github.com/gigamono/gigamono/pkg/database/models/resource"
+	"github.com/gigamono/gigamono/pkg/inits"
 )
 
 // Engine represents an engine instance.

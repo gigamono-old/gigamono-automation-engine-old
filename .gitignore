@@ -1,5 +1,4 @@
 **/.DS_Store
-**/sageflow.yaml
 public/
 .env
 tmp/

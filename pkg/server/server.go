@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"strconv"
 
-	"github.com/sageflow/sageengine/pkg/engine"
-	"github.com/sageflow/sageflow/pkg/services/proto/generated"
+	"github.com/gigamono/gigamono-workflow-engine/pkg/engine"
+	"github.com/gigamono/gigamono/pkg/services/proto/generated"
 
-	"github.com/sageflow/sageflow/pkg/inits"
+	"github.com/gigamono/gigamono/pkg/inits"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -43,7 +42,7 @@ func (server *EngineServer) Listen() error {
 	grpcServer := grpc.NewServer() // Create a gRPC server.
 
 	// Register gRPC service.
-	generated.RegisterEngineServiceServer(grpcServer, server)
+	generated.RegisterWorkflowEngineServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener) // Listen for requests.
