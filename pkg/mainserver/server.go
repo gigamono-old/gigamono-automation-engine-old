@@ -1,11 +1,9 @@
-package server
+package mainserver
 
 import (
 	"fmt"
 	"net"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/engine"
-	"github.com/gigamono/gigamono/pkg/logs"
 	"github.com/gin-gonic/gin"
 	"github.com/soheilhy/cmux"
 	"golang.org/x/sync/errgroup"
@@ -16,21 +14,14 @@ import (
 // WorkflowEngineServer is a grpc server with an engine.
 type WorkflowEngineServer struct {
 	inits.App
-	GinEngine      *gin.Engine
-	WorkflowEngine engine.WorkflowEngine
+	GinEngine *gin.Engine
 }
 
 // NewWorkflowEngineServer creates a new server instance.
 func NewWorkflowEngineServer(app inits.App) (WorkflowEngineServer, error) {
-	engine, err := engine.NewWorkflowEngine(&app)
-	if err != nil {
-		logs.FmtPrintln("initialising Workflow Engine server:", err)
-		return WorkflowEngineServer{}, err
-	}
 	return WorkflowEngineServer{
-		App:            app,
-		GinEngine:      gin.Default(),
-		WorkflowEngine: engine,
+		App:       app,
+		GinEngine: gin.Default(),
 	}, nil
 }
 

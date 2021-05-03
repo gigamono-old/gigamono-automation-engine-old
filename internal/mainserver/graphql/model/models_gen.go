@@ -10,8 +10,18 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 )
 
-type User struct {
-	ID string `json:"id" `
+type Workflow struct {
+	ID            string `json:"id" `
+	Name          string `json:"name" `
+	Specification string `json:"specification" `
+	IsActive      *bool  `json:"isActive" `
+	CreatorID     string `json:"creatorId" `
+}
+type WorkflowInput struct {
+	Name          string `json:"name" `
+	Specification string `json:"specification" `
+	IsActive      *bool  `json:"isActive" `
+	CreatorID     string `json:"creatorId" `
 }
 type Directive struct {
 	Name        string                      `json:"name" `

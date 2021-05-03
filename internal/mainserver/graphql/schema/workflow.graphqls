@@ -1,0 +1,14 @@
+type Workflow {
+  id: String!
+  name: String!
+  specification: String!
+  isActive: Boolean
+  creatorId: String!
+}
+
+input WorkflowInput {
+  name: String!
+  specification: String!
+  isActive: Boolean
+  creatorId: String!
+}

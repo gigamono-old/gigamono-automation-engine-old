@@ -1,10 +1,10 @@
-package server
+package mainserver
 
 import (
 	"net"
 	"net/http"
 
-	"github.com/gigamono/gigamono-workflow-engine/internal/graphql"
+	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
 )
 
 func (server *WorkflowEngineServer) httpServe(listener net.Listener) error {
