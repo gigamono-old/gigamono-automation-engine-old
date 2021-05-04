@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.7.1
 	github.com/go-pg/pg/v10 v10.9.1 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/soheilhy/cmux v0.1.4
 	github.com/tidwall/match v1.0.3 // indirect

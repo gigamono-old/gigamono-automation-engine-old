@@ -9,6 +9,4 @@ type Workflow {
 input WorkflowInput {
   name: String!
   specification: String!
-  isActive: Boolean
-  creatorId: String!
 }

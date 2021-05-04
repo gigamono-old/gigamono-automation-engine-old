@@ -7,27 +7,27 @@ import (
 	"context"
 
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/crud"
-	generated1 "github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/generated"
-	model1 "github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
+	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/generated"
+	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
 )
 
-func (r *mutationResolver) CreateWorkflow(ctx context.Context, workflow model1.WorkflowInput) (string, error) {
-	return crud.CreateWorkflow(ctx, &workflow)
+func (r *mutationResolver) CreateWorkflow(ctx context.Context, tokens model.TokensInput, workflow model.WorkflowInput) (string, error) {
+	return crud.CreateWorkflow(r.App, tokens, &workflow)
 }
 
-func (r *mutationResolver) ActivateWorkflow(ctx context.Context, id string) (string, error) {
-	return crud.ActivateWorkflow(ctx, id)
+func (r *mutationResolver) ActivateWorkflow(ctx context.Context, tokens model.TokensInput, id string) (string, error) {
+	return crud.ActivateWorkflow(r.App, tokens, id)
 }
 
-func (r *queryResolver) GetWorkflow(ctx context.Context, id string) (*model1.Workflow, error) {
-	return crud.GetWorkflow(ctx, id)
+func (r *queryResolver) GetWorkflow(ctx context.Context, tokens model.TokensInput, id string) (*model.Workflow, error) {
+	return crud.GetWorkflow(r.App, tokens, id)
 }
 
-// Mutation returns generated1.MutationResolver implementation.
-func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated1.QueryResolver implementation.
-func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
+// Query returns generated.QueryResolver implementation.
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
