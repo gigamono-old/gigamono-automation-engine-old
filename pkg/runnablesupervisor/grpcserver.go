@@ -1,4 +1,4 @@
-package mainserver
+package runnablesupervisor
 
 import (
 	"context"
@@ -10,18 +10,18 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func (server *MainServer) grpcServe(listener net.Listener) error {
-	grpcServer := grpc.NewServer() // Create a gRPC server.
+func (supervisor *RunnableSupervisor) grpcServe(listener net.Listener) error {
+	grpcServer := grpc.NewServer() // Create a gRPC service.
 
 	// Register gRPC service.
-	generated.RegisterWorkflowMainServerServer(grpcServer, server)
+	generated.RegisterWorkflowRunnableSupervisorServer(grpcServer, supervisor)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener) // Listen for requests.
 }
 
 // SayHello says Hello
-func (server *MainServer) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
+func (supervisor *RunnableSupervisor) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
 	engineMsg := "Engine replies: " + msg.Content
 	fmt.Println(engineMsg)
 	response := generated.Message{

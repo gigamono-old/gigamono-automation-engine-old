@@ -15,12 +15,12 @@ func (r *mutationResolver) CreateWorkflow(ctx context.Context, tokens model.Toke
 	return crud.CreateWorkflow(r.App, tokens, &workflow)
 }
 
-func (r *mutationResolver) ActivateWorkflow(ctx context.Context, tokens model.TokensInput, id string) (string, error) {
-	return crud.ActivateWorkflow(r.App, tokens, id)
+func (r *mutationResolver) ActivateWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (string, error) {
+	return crud.ActivateWorkflow(r.App, tokens, workflowID)
 }
 
-func (r *queryResolver) GetWorkflow(ctx context.Context, tokens model.TokensInput, id string) (*model.Workflow, error) {
-	return crud.GetWorkflow(r.App, tokens, id)
+func (r *queryResolver) GetWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (*model.Workflow, error) {
+	return crud.GetWorkflow(r.App, tokens, workflowID)
 }
 
 // Mutation returns generated.MutationResolver implementation.

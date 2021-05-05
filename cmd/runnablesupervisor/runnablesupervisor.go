@@ -4,7 +4,7 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/logs"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/mainserver"
+	"github.com/gigamono/gigamono-workflow-engine/pkg/runnablesupervisor"
 )
 
 func main() {
@@ -15,8 +15,8 @@ func main() {
 		return
 	}
 
-	// Start an engine gRPC server.
-	server, err := mainserver.NewWorkflowEngineServer(app)
+	// Start main server.
+	server, err := runnablesupervisor.NewRunnableSupervisor(app)
 	if err != nil {
 		logs.FmtPrintln("Unable to create engine server:", err)
 	}

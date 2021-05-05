@@ -1,4 +1,4 @@
-package mainserver
+package webhookservice
 
 import (
 	"fmt"
@@ -11,24 +11,24 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 )
 
-// MainServer represents the main server.
-type MainServer struct {
+// WebhookService is a grpc server with an engine.
+type WebhookService struct {
 	inits.App
 	GinEngine *gin.Engine
 }
 
-// NewMainServer creates a new server.
-func NewMainServer(app inits.App) (MainServer, error) {
-	return MainServer{
+// NewWebhookService creates a new server instance.
+func NewWebhookService(app inits.App) (WebhookService, error) {
+	return WebhookService{
 		App:       app,
 		GinEngine: gin.Default(),
 	}, nil
 }
 
 // Listen makes the server listen on specified port.
-func (server *MainServer) Listen() error {
+func (service *WebhookService) Listen() error {
 	// Listener on TCP port.
-	listener, err := net.Listen("tcp", fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.Ports.MainServer))
+	listener, err := net.Listen("tcp", fmt.Sprint(":", service.Config.Services.Types.WorkflowEngine.Ports.WebhookService))
 	if err != nil {
 		return err
 	}
@@ -40,8 +40,8 @@ func (server *MainServer) Listen() error {
 
 	// Run servers concurrently and sync errors.
 	grp := new(errgroup.Group)
-	grp.Go(func() error { return server.grpcServe(grpcListener) })
-	grp.Go(func() error { return server.httpServe(httpListener) })
+	grp.Go(func() error { return service.grpcServe(grpcListener) })
+	grp.Go(func() error { return service.httpServe(httpListener) })
 	grp.Go(func() error { return multiplexer.Serve() })
 	return grp.Wait()
 }

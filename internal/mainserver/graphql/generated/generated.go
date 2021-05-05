@@ -45,12 +45,12 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ActivateWorkflow func(childComplexity int, tokens model.TokensInput, id string) int
+		ActivateWorkflow func(childComplexity int, tokens model.TokensInput, workflowID string) int
 		CreateWorkflow   func(childComplexity int, tokens model.TokensInput, workflow model.WorkflowInput) int
 	}
 
 	Query struct {
-		GetWorkflow func(childComplexity int, tokens model.TokensInput, id string) int
+		GetWorkflow func(childComplexity int, tokens model.TokensInput, workflowID string) int
 	}
 
 	Tokens struct {
@@ -69,10 +69,10 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateWorkflow(ctx context.Context, tokens model.TokensInput, workflow model.WorkflowInput) (string, error)
-	ActivateWorkflow(ctx context.Context, tokens model.TokensInput, id string) (string, error)
+	ActivateWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (string, error)
 }
 type QueryResolver interface {
-	GetWorkflow(ctx context.Context, tokens model.TokensInput, id string) (*model.Workflow, error)
+	GetWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (*model.Workflow, error)
 }
 
 type executableSchema struct {
@@ -100,7 +100,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ActivateWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["id"].(string)), true
+		return e.complexity.Mutation.ActivateWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["workflowID"].(string)), true
 
 	case "Mutation.createWorkflow":
 		if e.complexity.Mutation.CreateWorkflow == nil {
@@ -124,7 +124,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["id"].(string)), true
+		return e.complexity.Query.GetWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["workflowID"].(string)), true
 
 	case "Tokens.accessToken":
 		if e.complexity.Tokens.AccessToken == nil {
@@ -242,12 +242,12 @@ var sources = []*ast.Source{
 	{Name: "internal/mainserver/graphql/schema/main.graphqls", Input: `directive @tag(validate: String) on INPUT_FIELD_DEFINITION
 
 type Query {
-  getWorkflow(tokens: TokensInput!, id: String!): Workflow!
+  getWorkflow(tokens: TokensInput!, workflowID: String!): Workflow!
 }
 
 type Mutation {
   createWorkflow(tokens: TokensInput!, workflow: WorkflowInput!): String!
-  activateWorkflow(tokens: TokensInput!, id: String!): String!
+  activateWorkflow(tokens: TokensInput!, workflowID: String!): String!
 }
 `, BuiltIn: false},
 	{Name: "internal/mainserver/graphql/schema/workflow.graphqls", Input: `type Workflow {
@@ -308,14 +308,14 @@ func (ec *executionContext) field_Mutation_activateWorkflow_args(ctx context.Con
 	}
 	args["tokens"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workflowID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg1
+	args["workflowID"] = arg1
 	return args, nil
 }
 
@@ -371,14 +371,14 @@ func (ec *executionContext) field_Query_getWorkflow_args(ctx context.Context, ra
 	}
 	args["tokens"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workflowID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg1
+	args["workflowID"] = arg1
 	return args, nil
 }
 
@@ -487,7 +487,7 @@ func (ec *executionContext) _Mutation_activateWorkflow(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ActivateWorkflow(rctx, args["tokens"].(model.TokensInput), args["id"].(string))
+		return ec.resolvers.Mutation().ActivateWorkflow(rctx, args["tokens"].(model.TokensInput), args["workflowID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -529,7 +529,7 @@ func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetWorkflow(rctx, args["tokens"].(model.TokensInput), args["id"].(string))
+		return ec.resolvers.Query().GetWorkflow(rctx, args["tokens"].(model.TokensInput), args["workflowID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

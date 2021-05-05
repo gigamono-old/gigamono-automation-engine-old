@@ -7,7 +7,7 @@ import (
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
 )
 
-func (server *WorkflowEngineServer) httpServe(listener net.Listener) error {
+func (server *MainServer) httpServe(listener net.Listener) error {
 	server.setRoutes() // Set routes.
 
 	// Use http server.
@@ -18,7 +18,7 @@ func (server *WorkflowEngineServer) httpServe(listener net.Listener) error {
 	return httpServer.Serve(listener)
 }
 
-func (server *WorkflowEngineServer) setRoutes() {
+func (server *MainServer) setRoutes() {
 	graphqlHandler := graphql.Handler(&server.App)
 	playgroundHandler := graphql.PlaygroundHandler()
 
