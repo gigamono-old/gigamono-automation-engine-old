@@ -9,8 +9,7 @@ import (
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/resolver"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/services/graphql/directives"
-	"github.com/gigamono/gigamono/pkg/services/graphql/handlers"
-	"github.com/gigamono/gigamono/pkg/services/graphql/interceptors"
+	"github.com/gigamono/gigamono/pkg/services/graphql/middleware"
 )
 
 // Handler handles requests to a graphQL route.
@@ -26,8 +25,8 @@ func Handler(app *inits.App) gin.HandlerFunc {
 	}))
 
 	// Add middlewares.
-	handler.Use(interceptors.ErrorModifier{})
-	handler.SetRecoverFunc(handlers.PanicHandler)
+	handler.Use(middleware.ErrorModifier{})
+	handler.SetRecoverFunc(middleware.PanicHandler)
 
 	return func(ctx *gin.Context) {
 		// Sec: Responses escaped by json.Marshal so there is some protection against XSS.

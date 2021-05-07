@@ -20,9 +20,9 @@ func (server *MainServer) grpcServe(listener net.Listener) error {
 	return grpcServer.Serve(listener) // Listen for requests.
 }
 
-// SayHello says Hello
+// SayHello replies with message.
 func (server *MainServer) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
-	engineMsg := "Engine replies: " + msg.Content
+	engineMsg := "Main Server replies: " + msg.Content
 	fmt.Println(engineMsg)
 	response := generated.Message{
 		Content: engineMsg,

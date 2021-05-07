@@ -11,18 +11,18 @@ func main() {
 	// Initialises app.
 	app, err := inits.NewApp("Resource")
 	if err != nil {
-		logs.FmtPrintln("Unable to initialize engine:", err)
+		logs.FmtPrintln("initialising webhook service:", err)
 		return
 	}
 
 	// Start main server.
 	server, err := webhookservice.NewWebhookService(app)
 	if err != nil {
-		logs.FmtPrintln("Unable to create engine server:", err)
+		logs.FmtPrintln("creating webhook service:", err)
 	}
 
 	// Listen on port.
 	if err := server.Listen(); err != nil {
-		logs.FmtPrintln("Unable to listen on port specified:", err)
+		logs.FmtPrintln("trying to listen on port specified:", err)
 	}
 }

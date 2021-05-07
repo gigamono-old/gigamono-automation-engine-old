@@ -20,9 +20,9 @@ func (supervisor *RunnableSupervisor) grpcServe(listener net.Listener) error {
 	return grpcServer.Serve(listener) // Listen for requests.
 }
 
-// SayHello says Hello
+// SayHello replies with message.
 func (supervisor *RunnableSupervisor) SayHello(ctx context.Context, msg *generated.Message) (*generated.Message, error) {
-	engineMsg := "Engine replies: " + msg.Content
+	engineMsg := "Runnable Supervisor replies: " + msg.Content
 	fmt.Println(engineMsg)
 	response := generated.Message{
 		Content: engineMsg,
