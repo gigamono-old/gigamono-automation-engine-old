@@ -6,3 +6,4 @@ logs/
 configs/
 trial/
 avatars/
+*.pem
