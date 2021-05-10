@@ -1,11 +1,23 @@
 package runnablesupervisor
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 )
 
-func (supervisor *RunnableSupervisor) httpServe(listener net.Listener) error {
+func (supervisor *RunnableSupervisor) httpServe() error {
+	listener, err := net.Listen(
+		"tcp",
+		fmt.Sprint(
+			":",
+			supervisor.Config.Services.Types.WorkflowEngine.PublicPorts.RunnableSupervisor,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
 	supervisor.setRoutes() // Set routes.
 
 	// Use http server.

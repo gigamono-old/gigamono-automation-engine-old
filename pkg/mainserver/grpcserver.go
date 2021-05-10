@@ -10,7 +10,15 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func (server *MainServer) grpcServe(listener net.Listener) error {
+func (server *MainServer) grpcServe() error {
+	listener, err := net.Listen(
+		"tcp",
+		fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.PrivatePorts.MainServer),
+	)
+	if err != nil {
+		return err
+	}
+
 	grpcServer := grpc.NewServer() // Create a gRPC server.
 
 	// Register gRPC service.

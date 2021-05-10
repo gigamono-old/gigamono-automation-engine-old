@@ -10,7 +10,18 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func (service *WebhookService) grpcServe(listener net.Listener) error {
+func (service *WebhookService) grpcServe() error {
+	listener, err := net.Listen(
+		"tcp",
+		fmt.Sprint(
+			":",
+			service.Config.Services.Types.WorkflowEngine.PrivatePorts.WebhookService,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
 	grpcServer := grpc.NewServer() // Create a gRPC service.
 
 	// Register gRPC service.

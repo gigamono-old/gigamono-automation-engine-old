@@ -1,13 +1,22 @@
 package mainserver
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
 )
 
-func (server *MainServer) httpServe(listener net.Listener) error {
+func (server *MainServer) httpServe() error {
+	listener, err := net.Listen(
+		"tcp",
+		fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.PublicPorts.MainServer),
+	)
+	if err != nil {
+		return err
+	}
+
 	server.setRoutes() // Set routes.
 
 	// Use http server.

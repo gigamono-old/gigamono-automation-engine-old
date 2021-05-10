@@ -10,7 +10,18 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func (supervisor *RunnableSupervisor) grpcServe(listener net.Listener) error {
+func (supervisor *RunnableSupervisor) grpcServe() error {
+	listener, err := net.Listen(
+		"tcp",
+		fmt.Sprint(
+			":",
+			supervisor.Config.Services.Types.WorkflowEngine.PrivatePorts.RunnableSupervisor,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
 	grpcServer := grpc.NewServer() // Create a gRPC service.
 
 	// Register gRPC service.
