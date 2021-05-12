@@ -10,13 +10,14 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/messages"
 	"github.com/gigamono/gigamono/pkg/services/auth"
+	"github.com/gigamono/gigamono/pkg/services/session"
 	"github.com/gofrs/uuid"
 )
 
 // CreateWorkflow creates a new workflow in the database.
 func CreateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflow *gqlModel.WorkflowInput) (string, error) {
 	// TODO: Sec: Validation, Auth, Permission.
-	sessionUserID, err := auth.GetSessionUserID(auth.Tokens(tokens))
+	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
 	if err != nil {
 		panic(errs.NewSystemError(
 			messages.Error["user-auth"].(string),
@@ -48,7 +49,7 @@ func CreateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensI
 // ActivateWorkflow starts running a workflow.
 func ActivateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflowID string) (string, error) {
 	// TODO: Sec: Auth, Permission.
-	sessionUserID, err := auth.GetSessionUserID(auth.Tokens(tokens))
+	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
 	if err != nil {
 		panic(errs.NewSystemError(
 			messages.Error["user-auth"].(string),
@@ -75,7 +76,7 @@ func ActivateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.Token
 // GetWorkflow gets an existing workflow from the database.
 func GetWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflowID string) (*gqlModel.Workflow, error) {
 	// TODO: Sec: Auth, Permission.
-	sessionUserID, err := auth.GetSessionUserID(auth.Tokens(tokens))
+	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
 	if err != nil {
 		panic(errs.NewSystemError(
 			messages.Error["user-auth"].(string),
