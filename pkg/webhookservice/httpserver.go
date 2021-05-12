@@ -11,7 +11,7 @@ func (service *WebhookService) httpServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			service.Config.Services.Types.WorkflowEngine.PublicPorts.WebhookService,
+			service.Config.Services.WorkflowEngine.WebhookService.Ports.Public,
 		),
 	)
 	if err != nil {

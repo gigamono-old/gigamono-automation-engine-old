@@ -15,7 +15,7 @@ func (supervisor *RunnableSupervisor) grpcServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			supervisor.Config.Services.Types.WorkflowEngine.PrivatePorts.RunnableSupervisor,
+			supervisor.Config.Services.WorkflowEngine.RunnableSupervisor.Ports.Private,
 		),
 	)
 	if err != nil {

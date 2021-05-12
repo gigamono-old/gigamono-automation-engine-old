@@ -11,7 +11,7 @@ func (supervisor *RunnableSupervisor) httpServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			supervisor.Config.Services.Types.WorkflowEngine.PublicPorts.RunnableSupervisor,
+			supervisor.Config.Services.WorkflowEngine.RunnableSupervisor.Ports.Public,
 		),
 	)
 	if err != nil {

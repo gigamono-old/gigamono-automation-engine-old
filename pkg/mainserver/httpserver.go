@@ -11,7 +11,7 @@ import (
 func (server *MainServer) httpServe() error {
 	listener, err := net.Listen(
 		"tcp",
-		fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.PublicPorts.MainServer),
+		fmt.Sprint(":", server.Config.Services.WorkflowEngine.MainServer.Ports.Public),
 	)
 	if err != nil {
 		return err

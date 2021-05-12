@@ -13,7 +13,7 @@ import (
 func (server *MainServer) grpcServe() error {
 	listener, err := net.Listen(
 		"tcp",
-		fmt.Sprint(":", server.Config.Services.Types.WorkflowEngine.PrivatePorts.MainServer),
+		fmt.Sprint(":", server.Config.Services.WorkflowEngine.MainServer.Ports.Private),
 	)
 	if err != nil {
 		return err

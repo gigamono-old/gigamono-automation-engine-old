@@ -15,7 +15,7 @@ func (service *WebhookService) grpcServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			service.Config.Services.Types.WorkflowEngine.PrivatePorts.WebhookService,
+			service.Config.Services.WorkflowEngine.WebhookService.Ports.Private,
 		),
 	)
 	if err != nil {
