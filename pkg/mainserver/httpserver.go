@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
+	"github.com/gigamono/gigamono/pkg/configs"
+	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
 )
 
 func (server *MainServer) httpServe() error {
@@ -28,10 +30,16 @@ func (server *MainServer) httpServe() error {
 }
 
 func (server *MainServer) setRoutes() {
-	graphqlHandler := graphql.Handler(&server.App)
-	playgroundHandler := graphql.PlaygroundHandler()
+	// Depending on service config, create a local static folder for serving serverless files.
+	if server.Config.Filestore.Serverless.Kind == configs.Local {
+		// TODO: Permission middleware.
+		// Authenticate session user.
+		workflowStaticRoute := server.GinEngine.Group("/serverless", middleware.Authenticate(&server.App))
+		workflowStaticRoute.StaticFS("/", http.Dir(server.Config.Filestore.Serverless.Path))
+	}
 
-	server.GinEngine.POST("/graphql", graphqlHandler)      // Handles all graphql requests.
-	server.GinEngine.GET("/graphql", graphqlHandler)       // Handles query-only graphql requests.
-	server.GinEngine.GET("/playground", playgroundHandler) // Shows playground UI.
+	// Handlers.
+	graphqlHandler := graphql.Handler(&server.App)
+	server.GinEngine.POST("/graphql", graphqlHandler) // Handles all graphql requests.
+	server.GinEngine.GET("/graphql", graphqlHandler)  // Handles query-only graphql requests.
 }
