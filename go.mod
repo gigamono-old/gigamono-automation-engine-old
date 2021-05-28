@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/99designs/gqlgen v0.13.0
-	github.com/gigamono/gigamono v0.0.0-20210505114150-59066b8b3792
+	github.com/gigamono/gigamono v0.0.0
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19 // indirect
 	github.com/gin-gonic/gin v1.7.1
 	github.com/go-pg/pg/v10 v10.9.1 // indirect
@@ -21,4 +21,4 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 )
 
-replace github.com/gigamono/gigamono v0.0.0-20210505114150-59066b8b3792 => ../gigamono
+replace github.com/gigamono/gigamono v0.0.0 => ../gigamono

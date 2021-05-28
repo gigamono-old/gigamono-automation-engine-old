@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Initialises app.
-	app, err := inits.NewApp("Resource")
+	app, err := inits.NewApp(inits.WorkflowEngineWebhookService)
 	if err != nil {
 		logs.FmtPrintln("initialising webhook service:", err)
 		return

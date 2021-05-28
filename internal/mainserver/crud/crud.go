@@ -9,22 +9,21 @@ import (
 	"github.com/gigamono/gigamono/pkg/errs"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/messages"
-	"github.com/gigamono/gigamono/pkg/services/auth"
-	"github.com/gigamono/gigamono/pkg/services/session"
 	"github.com/gofrs/uuid"
 )
 
 // CreateWorkflow creates a new workflow in the database.
-func CreateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflow *gqlModel.WorkflowInput) (string, error) {
+func CreateWorkflow(_ context.Context, app *inits.App, workflow *gqlModel.WorkflowInput) (string, error) {
 	// TODO: Sec: Validation, Auth, Permission.
-	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
-	if err != nil {
-		panic(errs.NewSystemError(
-			messages.Error["user-auth"].(string),
-			"authenticating user",
-			err,
-		))
-	}
+	sessionUserID := uuid.UUID{}
+	// sessionUserID, err := session.GetSessionUser()
+	// if err != nil {
+	// 	panic(errs.NewSystemError(
+	// 		messages.Error["user-auth"].(string),
+	// 		"authenticating user",
+	// 		err,
+	// 	))
+	// }
 
 	// Validate workflow config.
 	if _, err := configs.NewWorkflowConfig(workflow.Specification, configs.JSON); err != nil {
@@ -47,16 +46,17 @@ func CreateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensI
 }
 
 // ActivateWorkflow starts running a workflow.
-func ActivateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflowID string) (string, error) {
+func ActivateWorkflow(_ context.Context, app *inits.App, workflowID string) (string, error) {
 	// TODO: Sec: Auth, Permission.
-	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
-	if err != nil {
-		panic(errs.NewSystemError(
-			messages.Error["user-auth"].(string),
-			"authenticating user",
-			err,
-		))
-	}
+	sessionUserID := uuid.UUID{}
+	// sessionUserID, err := session.GetSessionUser()
+	// if err != nil {
+	// 	panic(errs.NewSystemError(
+	// 		messages.Error["user-auth"].(string),
+	// 		"authenticating user",
+	// 		err,
+	// 	))
+	// }
 
 	// Parse workflow id.
 	// Sec: Must have been validate with directives.
@@ -74,16 +74,17 @@ func ActivateWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.Token
 }
 
 // GetWorkflow gets an existing workflow from the database.
-func GetWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInput, workflowID string) (*gqlModel.Workflow, error) {
+func GetWorkflow(_ context.Context, app *inits.App, workflowID string) (*gqlModel.Workflow, error) {
 	// TODO: Sec: Auth, Permission.
-	sessionUserID, err := session.GetSessionUserID(auth.Tokens(tokens))
-	if err != nil {
-		panic(errs.NewSystemError(
-			messages.Error["user-auth"].(string),
-			"authenticating user",
-			err,
-		))
-	}
+	sessionUserID := uuid.UUID{}
+	// sessionUserID, err := session.GetSessionUser()
+	// if err != nil {
+	// 	panic(errs.NewSystemError(
+	// 		messages.Error["user-auth"].(string),
+	// 		"authenticating user",
+	// 		err,
+	// 	))
+	// }
 
 	// Parse workflow id.
 	// Sec: Must have been validate with directives.
@@ -96,10 +97,10 @@ func GetWorkflow(ctx context.Context, app *inits.App, tokens gqlModel.TokensInpu
 	}
 
 	return &gqlModel.Workflow{
-		ID:            workflow.ID.String(),
-		Name:          workflow.Name,
-		Specification: workflow.Specification,
-		IsActive:      &workflow.IsActive,
-		CreatorID:     workflow.CreatorID.String(),
+		ID:   workflow.ID.String(),
+		Name: workflow.Name,
+		// Specification: workflow.Specification,
+		IsActive:  &workflow.IsActive,
+		CreatorID: workflow.CreatorID.String(),
 	}, nil
 }

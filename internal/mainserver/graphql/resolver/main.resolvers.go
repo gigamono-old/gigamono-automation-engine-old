@@ -11,16 +11,16 @@ import (
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
 )
 
-func (r *mutationResolver) CreateWorkflow(ctx context.Context, tokens model.TokensInput, workflow model.WorkflowInput) (string, error) {
-	return crud.CreateWorkflow(ctx, r.App, tokens, &workflow)
+func (r *mutationResolver) CreateWorkflow(ctx context.Context, workflow model.WorkflowInput) (string, error) {
+	return crud.CreateWorkflow(ctx, r.App, &workflow)
 }
 
-func (r *mutationResolver) ActivateWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (string, error) {
-	return crud.ActivateWorkflow(ctx, r.App, tokens, workflowID)
+func (r *mutationResolver) ActivateWorkflow(ctx context.Context, workflowID string) (string, error) {
+	return crud.ActivateWorkflow(ctx, r.App, workflowID)
 }
 
-func (r *queryResolver) GetWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (*model.Workflow, error) {
-	return crud.GetWorkflow(ctx, r.App, tokens, workflowID)
+func (r *queryResolver) GetWorkflow(ctx context.Context, workflowID string) (*model.Workflow, error) {
+	return crud.GetWorkflow(ctx, r.App, workflowID)
 }
 
 // Mutation returns generated.MutationResolver implementation.

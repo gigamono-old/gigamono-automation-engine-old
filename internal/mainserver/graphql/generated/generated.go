@@ -45,17 +45,12 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ActivateWorkflow func(childComplexity int, tokens model.TokensInput, workflowID string) int
-		CreateWorkflow   func(childComplexity int, tokens model.TokensInput, workflow model.WorkflowInput) int
+		ActivateWorkflow func(childComplexity int, workflowID string) int
+		CreateWorkflow   func(childComplexity int, workflow model.WorkflowInput) int
 	}
 
 	Query struct {
-		GetWorkflow func(childComplexity int, tokens model.TokensInput, workflowID string) int
-	}
-
-	Tokens struct {
-		AccessToken  func(childComplexity int) int
-		RefreshToken func(childComplexity int) int
+		GetWorkflow func(childComplexity int, workflowID string) int
 	}
 
 	Workflow struct {
@@ -68,11 +63,11 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateWorkflow(ctx context.Context, tokens model.TokensInput, workflow model.WorkflowInput) (string, error)
-	ActivateWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (string, error)
+	CreateWorkflow(ctx context.Context, workflow model.WorkflowInput) (string, error)
+	ActivateWorkflow(ctx context.Context, workflowID string) (string, error)
 }
 type QueryResolver interface {
-	GetWorkflow(ctx context.Context, tokens model.TokensInput, workflowID string) (*model.Workflow, error)
+	GetWorkflow(ctx context.Context, workflowID string) (*model.Workflow, error)
 }
 
 type executableSchema struct {
@@ -100,7 +95,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ActivateWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["workflowID"].(string)), true
+		return e.complexity.Mutation.ActivateWorkflow(childComplexity, args["workflowID"].(string)), true
 
 	case "Mutation.createWorkflow":
 		if e.complexity.Mutation.CreateWorkflow == nil {
@@ -112,7 +107,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["workflow"].(model.WorkflowInput)), true
+		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["workflow"].(model.WorkflowInput)), true
 
 	case "Query.getWorkflow":
 		if e.complexity.Query.GetWorkflow == nil {
@@ -124,21 +119,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetWorkflow(childComplexity, args["tokens"].(model.TokensInput), args["workflowID"].(string)), true
-
-	case "Tokens.accessToken":
-		if e.complexity.Tokens.AccessToken == nil {
-			break
-		}
-
-		return e.complexity.Tokens.AccessToken(childComplexity), true
-
-	case "Tokens.refreshToken":
-		if e.complexity.Tokens.RefreshToken == nil {
-			break
-		}
-
-		return e.complexity.Tokens.RefreshToken(childComplexity), true
+		return e.complexity.Query.GetWorkflow(childComplexity, args["workflowID"].(string)), true
 
 	case "Workflow.creatorId":
 		if e.complexity.Workflow.CreatorID == nil {
@@ -242,12 +223,12 @@ var sources = []*ast.Source{
 	{Name: "internal/mainserver/graphql/schema/main.graphqls", Input: `directive @tag(validate: String) on INPUT_FIELD_DEFINITION
 
 type Query {
-  getWorkflow(tokens: TokensInput!, workflowID: String!): Workflow!
+  getWorkflow(workflowID: String!): Workflow!
 }
 
 type Mutation {
-  createWorkflow(tokens: TokensInput!, workflow: WorkflowInput!): String!
-  activateWorkflow(tokens: TokensInput!, workflowID: String!): String!
+  createWorkflow(workflow: WorkflowInput!): String!
+  activateWorkflow(workflowID: String!): String!
 }
 `, BuiltIn: false},
 	{Name: "internal/mainserver/graphql/schema/workflow.graphqls", Input: `type Workflow {
@@ -261,16 +242,6 @@ type Mutation {
 input WorkflowInput {
   name: String!
   specification: String!
-}
-`, BuiltIn: false},
-	{Name: "../gigamono/pkg/services/graphql/schema/tokens.graphqls", Input: `type Tokens {
-    accessToken: String!
-    refreshToken: String!
-}
-
-input TokensInput {
-    accessToken: String!
-    refreshToken: String!
 }
 `, BuiltIn: false},
 }
@@ -298,48 +269,30 @@ func (ec *executionContext) dir_tag_args(ctx context.Context, rawArgs map[string
 func (ec *executionContext) field_Mutation_activateWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.TokensInput
-	if tmp, ok := rawArgs["tokens"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
-		arg0, err = ec.unmarshalNTokensInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐTokensInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["tokens"] = arg0
-	var arg1 string
+	var arg0 string
 	if tmp, ok := rawArgs["workflowID"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflowID"] = arg1
+	args["workflowID"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_createWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.TokensInput
-	if tmp, ok := rawArgs["tokens"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
-		arg0, err = ec.unmarshalNTokensInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐTokensInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["tokens"] = arg0
-	var arg1 model.WorkflowInput
+	var arg0 model.WorkflowInput
 	if tmp, ok := rawArgs["workflow"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflow"))
-		arg1, err = ec.unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx, tmp)
+		arg0, err = ec.unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflow"] = arg1
+	args["workflow"] = arg0
 	return args, nil
 }
 
@@ -361,24 +314,15 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_getWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.TokensInput
-	if tmp, ok := rawArgs["tokens"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
-		arg0, err = ec.unmarshalNTokensInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐTokensInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["tokens"] = arg0
-	var arg1 string
+	var arg0 string
 	if tmp, ok := rawArgs["workflowID"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflowID"] = arg1
+	args["workflowID"] = arg0
 	return args, nil
 }
 
@@ -445,7 +389,7 @@ func (ec *executionContext) _Mutation_createWorkflow(ctx context.Context, field 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["tokens"].(model.TokensInput), args["workflow"].(model.WorkflowInput))
+		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["workflow"].(model.WorkflowInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -487,7 +431,7 @@ func (ec *executionContext) _Mutation_activateWorkflow(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ActivateWorkflow(rctx, args["tokens"].(model.TokensInput), args["workflowID"].(string))
+		return ec.resolvers.Mutation().ActivateWorkflow(rctx, args["workflowID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -529,7 +473,7 @@ func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetWorkflow(rctx, args["tokens"].(model.TokensInput), args["workflowID"].(string))
+		return ec.resolvers.Query().GetWorkflow(rctx, args["workflowID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -615,76 +559,6 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Tokens_accessToken(ctx context.Context, field graphql.CollectedField, obj *model.Tokens) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Tokens",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AccessToken, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Tokens_refreshToken(ctx context.Context, field graphql.CollectedField, obj *model.Tokens) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Tokens",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.RefreshToken, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Workflow_id(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
@@ -1946,34 +1820,6 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputTokensInput(ctx context.Context, obj interface{}) (model.TokensInput, error) {
-	var it model.TokensInput
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "accessToken":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessToken"))
-			it.AccessToken, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "refreshToken":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("refreshToken"))
-			it.RefreshToken, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputWorkflowInput(ctx context.Context, obj interface{}) (model.WorkflowInput, error) {
 	var it model.WorkflowInput
 	var asMap = obj.(map[string]interface{})
@@ -2079,38 +1925,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var tokensImplementors = []string{"Tokens"}
-
-func (ec *executionContext) _Tokens(ctx context.Context, sel ast.SelectionSet, obj *model.Tokens) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, tokensImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Tokens")
-		case "accessToken":
-			out.Values[i] = ec._Tokens_accessToken(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "refreshToken":
-			out.Values[i] = ec._Tokens_refreshToken(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2439,11 +2253,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNTokensInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐTokensInput(ctx context.Context, v interface{}) (model.TokensInput, error) {
-	res, err := ec.unmarshalInputTokensInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNWorkflow2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflow(ctx context.Context, sel ast.SelectionSet, v model.Workflow) graphql.Marshaler {

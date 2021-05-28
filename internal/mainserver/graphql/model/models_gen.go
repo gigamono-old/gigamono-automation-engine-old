@@ -10,14 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 )
 
-type Tokens struct {
-	AccessToken  string `json:"accessToken" `
-	RefreshToken string `json:"refreshToken" `
-}
-type TokensInput struct {
-	AccessToken  string `json:"accessToken" `
-	RefreshToken string `json:"refreshToken" `
-}
 type Workflow struct {
 	ID            string `json:"id" `
 	Name          string `json:"name" `

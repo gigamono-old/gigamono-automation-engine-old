@@ -1,10 +1,10 @@
 directive @tag(validate: String) on INPUT_FIELD_DEFINITION
 
 type Query {
-  getWorkflow(tokens: TokensInput!, workflowID: String!): Workflow!
+  getWorkflow(workflowID: String!): Workflow!
 }
 
 type Mutation {
-  createWorkflow(tokens: TokensInput!, workflow: WorkflowInput!): String!
-  activateWorkflow(tokens: TokensInput!, workflowID: String!): String!
+  createWorkflow(workflow: WorkflowInput!): String!
+  activateWorkflow(workflowID: String!): String!
 }
