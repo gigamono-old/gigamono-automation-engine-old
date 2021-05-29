@@ -6,8 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
-	"github.com/gigamono/gigamono/pkg/configs"
-	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
+	"github.com/gigamono/gigamono/pkg/services/rest"
 )
 
 func (server *MainServer) httpServe() error {
@@ -30,13 +29,8 @@ func (server *MainServer) httpServe() error {
 }
 
 func (server *MainServer) setRoutes() {
-	// Depending on service config, create a local static folder for serving serverless files.
-	if server.Config.Filestore.Serverless.Kind == configs.Local {
-		// TODO: Permission middleware.
-		// Authenticate session user.
-		workflowStaticRoute := server.GinEngine.Group("/serverless", middleware.Authenticate(&server.App))
-		workflowStaticRoute.StaticFS("/", http.Dir(server.Config.Filestore.Serverless.Path))
-	}
+	// Set local static routes if specified.
+	rest.SetLocalStaticRoutes(server.GinEngine, &server.App)
 
 	// Handlers.
 	graphqlHandler := graphql.Handler(&server.App)

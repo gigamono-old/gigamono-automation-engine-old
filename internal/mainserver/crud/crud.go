@@ -9,21 +9,19 @@ import (
 	"github.com/gigamono/gigamono/pkg/errs"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/messages"
+	"github.com/gigamono/gigamono/pkg/security"
+	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
 	"github.com/gofrs/uuid"
 )
 
 // CreateWorkflow creates a new workflow in the database.
-func CreateWorkflow(_ context.Context, app *inits.App, workflow *gqlModel.WorkflowInput) (string, error) {
-	// TODO: Sec: Validation, Auth, Permission.
-	sessionUserID := uuid.UUID{}
-	// sessionUserID, err := session.GetSessionUser()
-	// if err != nil {
-	// 	panic(errs.NewSystemError(
-	// 		messages.Error["user-auth"].(string),
-	// 		"authenticating user",
-	// 		err,
-	// 	))
-	// }
+func CreateWorkflow(ctx context.Context, app *inits.App, workflow *gqlModel.WorkflowInput) (string, error) {
+	// TODO: Sec: Validation, Permission.
+	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
+	userID, err := uuid.FromString(claims.Subject)
+	if err != nil {
+		panic(err)
+	}
 
 	// Validate workflow config.
 	if _, err := configs.NewWorkflowConfig(workflow.Specification, configs.JSON); err != nil {
@@ -36,8 +34,10 @@ func CreateWorkflow(_ context.Context, app *inits.App, workflow *gqlModel.Workfl
 
 	// TODO: Compile workflow config.
 
+	// TODO: Save workflow assets.
+
 	// Create the workflow in db.
-	id, err := controller.CreateWorkflow(&app.DB, &sessionUserID, workflow.Name, workflow.Specification)
+	id, err := controller.CreateWorkflow(&app.DB, &userID, workflow.Name)
 	if err != nil {
 		panic(errs.NewSystemError("", "creating workflow", err))
 	}
@@ -46,24 +46,21 @@ func CreateWorkflow(_ context.Context, app *inits.App, workflow *gqlModel.Workfl
 }
 
 // ActivateWorkflow starts running a workflow.
-func ActivateWorkflow(_ context.Context, app *inits.App, workflowID string) (string, error) {
-	// TODO: Sec: Auth, Permission.
-	sessionUserID := uuid.UUID{}
-	// sessionUserID, err := session.GetSessionUser()
-	// if err != nil {
-	// 	panic(errs.NewSystemError(
-	// 		messages.Error["user-auth"].(string),
-	// 		"authenticating user",
-	// 		err,
-	// 	))
-	// }
+func ActivateWorkflow(ctx context.Context, app *inits.App, workflowID string) (string, error) {
+	// TODO: Sec: Validation, Permission.
+	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
+	userID, err := uuid.FromString(claims.Subject)
+	if err != nil {
+		panic(err)
+	}
 
-	// Parse workflow id.
-	// Sec: Must have been validate with directives.
-	workflowUUID, _ := uuid.FromString(workflowID)
+	workflowUUID, err := uuid.FromString(workflowID)
+	if err != nil {
+		panic(err)
+	}
 
 	// Activate the workflow in db.
-	id, err := controller.ActivateWorkflow(&app.DB, &sessionUserID, &workflowUUID)
+	id, err := controller.ActivateWorkflow(&app.DB, &userID, &workflowUUID)
 	if err != nil {
 		panic(errs.NewSystemError("", "activating workflow", err))
 	}
@@ -74,24 +71,21 @@ func ActivateWorkflow(_ context.Context, app *inits.App, workflowID string) (str
 }
 
 // GetWorkflow gets an existing workflow from the database.
-func GetWorkflow(_ context.Context, app *inits.App, workflowID string) (*gqlModel.Workflow, error) {
-	// TODO: Sec: Auth, Permission.
-	sessionUserID := uuid.UUID{}
-	// sessionUserID, err := session.GetSessionUser()
-	// if err != nil {
-	// 	panic(errs.NewSystemError(
-	// 		messages.Error["user-auth"].(string),
-	// 		"authenticating user",
-	// 		err,
-	// 	))
-	// }
+func GetWorkflow(ctx context.Context, app *inits.App, workflowID string) (*gqlModel.Workflow, error) {
+	// TODO: Sec: Validation, Permission.
+	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
+	userID, err := uuid.FromString(claims.Subject)
+	if err != nil {
+		panic(err)
+	}
 
-	// Parse workflow id.
-	// Sec: Must have been validate with directives.
-	workflowUUID, _ := uuid.FromString(workflowID)
+	workflowUUID, err := uuid.FromString(workflowID)
+	if err != nil {
+		panic(err)
+	}
 
 	// Get the workflow from db.
-	workflow, err := controller.GetWorkflow(&app.DB, &sessionUserID, &workflowUUID)
+	workflow, err := controller.GetWorkflow(&app.DB, &userID, &workflowUUID)
 	if err != nil {
 		panic(errs.NewSystemError("", "getting workflow", err))
 	}
