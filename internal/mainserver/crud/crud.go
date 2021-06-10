@@ -9,7 +9,6 @@ import (
 	"github.com/gigamono/gigamono/pkg/errs"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/messages"
-	"github.com/gigamono/gigamono/pkg/security"
 	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
 	"github.com/gofrs/uuid"
 )
@@ -17,11 +16,7 @@ import (
 // CreateWorkflow creates a new workflow in the database.
 func CreateWorkflow(ctx context.Context, app *inits.App, workflow *gqlModel.WorkflowInput) (string, error) {
 	// TODO: Sec: Validation, Permission.
-	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
-	userID, err := uuid.FromString(claims.Subject)
-	if err != nil {
-		panic(err)
-	}
+	userID := ctx.Value(middleware.SessionDataKey).(middleware.SessionData).UserID
 
 	// Validate workflow config.
 	if _, err := configs.NewWorkflowConfig(workflow.Specification, configs.JSON); err != nil {
@@ -48,11 +43,7 @@ func CreateWorkflow(ctx context.Context, app *inits.App, workflow *gqlModel.Work
 // ActivateWorkflow starts running a workflow.
 func ActivateWorkflow(ctx context.Context, app *inits.App, workflowID string) (string, error) {
 	// TODO: Sec: Validation, Permission.
-	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
-	userID, err := uuid.FromString(claims.Subject)
-	if err != nil {
-		panic(err)
-	}
+	userID := ctx.Value(middleware.SessionDataKey).(middleware.SessionData).UserID
 
 	workflowUUID, err := uuid.FromString(workflowID)
 	if err != nil {
@@ -73,11 +64,7 @@ func ActivateWorkflow(ctx context.Context, app *inits.App, workflowID string) (s
 // GetWorkflow gets an existing workflow from the database.
 func GetWorkflow(ctx context.Context, app *inits.App, workflowID string) (*gqlModel.Workflow, error) {
 	// TODO: Sec: Validation, Permission.
-	claims := ctx.Value(middleware.ClaimContextKey{}).(security.Claims)
-	userID, err := uuid.FromString(claims.Subject)
-	if err != nil {
-		panic(err)
-	}
+	userID := ctx.Value(middleware.SessionDataKey).(middleware.SessionData).UserID
 
 	workflowUUID, err := uuid.FromString(workflowID)
 	if err != nil {

@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
-	"github.com/gigamono/gigamono/pkg/services/rest"
+	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
+	"github.com/gigamono/gigamono/pkg/services/rest/routes"
 )
 
 func (server *MainServer) httpServe() error {
@@ -30,10 +31,13 @@ func (server *MainServer) httpServe() error {
 
 func (server *MainServer) setRoutes() {
 	// Set local static routes if specified.
-	rest.SetLocalStaticRoutes(server.GinEngine, &server.App)
+	routes.SetLocalStaticRoutes(server.GinEngine, &server.App)
 
-	// Handlers.
+	// GraphQL handler.
 	graphqlHandler := graphql.Handler(&server.App)
-	server.GinEngine.POST("/graphql", graphqlHandler) // Handles all graphql requests.
-	server.GinEngine.GET("/graphql", graphqlHandler)  // Handles query-only graphql requests.
+	graphqlRoute := server.GinEngine.Group("/graphql", middleware.AuthenticateCreateUser(&server.App))
+	{
+		graphqlRoute.POST("/", graphqlHandler) // Handles all graphql requests.
+		graphqlRoute.GET("/", graphqlHandler)  // Handles query-only graphql requests.
+	}
 }
