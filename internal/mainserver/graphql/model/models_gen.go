@@ -15,11 +15,7 @@ type Workflow struct {
 	Name          string `json:"name" `
 	Specification string `json:"specification" `
 	IsActive      *bool  `json:"isActive" `
-	CreatorID     string `json:"creatorId" `
-}
-type WorkflowInput struct {
-	Name          string `json:"name" `
-	Specification string `json:"specification" `
+	CreatorID     string `json:"creatorID" `
 }
 type Directive struct {
 	Name        string                      `json:"name" `

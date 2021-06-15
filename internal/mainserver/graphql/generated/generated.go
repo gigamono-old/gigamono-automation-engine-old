@@ -45,12 +45,12 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ActivateWorkflow func(childComplexity int, workflowID string) int
-		CreateWorkflow   func(childComplexity int, workflow model.WorkflowInput) int
+		CreateWorkflow             func(childComplexity int, specification string) int
+		PatchWorkflowSpecification func(childComplexity int, id string, patch string) int
 	}
 
 	Query struct {
-		GetWorkflow func(childComplexity int, workflowID string) int
+		GetWorkflow func(childComplexity int, id string) int
 	}
 
 	Workflow struct {
@@ -63,11 +63,11 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateWorkflow(ctx context.Context, workflow model.WorkflowInput) (string, error)
-	ActivateWorkflow(ctx context.Context, workflowID string) (string, error)
+	CreateWorkflow(ctx context.Context, specification string) (*model.Workflow, error)
+	PatchWorkflowSpecification(ctx context.Context, id string, patch string) (*model.Workflow, error)
 }
 type QueryResolver interface {
-	GetWorkflow(ctx context.Context, workflowID string) (*model.Workflow, error)
+	GetWorkflow(ctx context.Context, id string) (*model.Workflow, error)
 }
 
 type executableSchema struct {
@@ -85,18 +85,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.activateWorkflow":
-		if e.complexity.Mutation.ActivateWorkflow == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_activateWorkflow_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.ActivateWorkflow(childComplexity, args["workflowID"].(string)), true
-
 	case "Mutation.createWorkflow":
 		if e.complexity.Mutation.CreateWorkflow == nil {
 			break
@@ -107,7 +95,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["workflow"].(model.WorkflowInput)), true
+		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["specification"].(string)), true
+
+	case "Mutation.patchWorkflowSpecification":
+		if e.complexity.Mutation.PatchWorkflowSpecification == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_patchWorkflowSpecification_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PatchWorkflowSpecification(childComplexity, args["id"].(string), args["patch"].(string)), true
 
 	case "Query.getWorkflow":
 		if e.complexity.Query.GetWorkflow == nil {
@@ -119,9 +119,9 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetWorkflow(childComplexity, args["workflowID"].(string)), true
+		return e.complexity.Query.GetWorkflow(childComplexity, args["id"].(string)), true
 
-	case "Workflow.creatorId":
+	case "Workflow.creatorID":
 		if e.complexity.Workflow.CreatorID == nil {
 			break
 		}
@@ -223,25 +223,20 @@ var sources = []*ast.Source{
 	{Name: "internal/mainserver/graphql/schema/main.graphqls", Input: `directive @tag(validate: String) on INPUT_FIELD_DEFINITION
 
 type Query {
-  getWorkflow(workflowID: String!): Workflow!
+  getWorkflow(id: String!): Workflow!
 }
 
 type Mutation {
-  createWorkflow(workflow: WorkflowInput!): String!
-  activateWorkflow(workflowID: String!): String!
+  createWorkflow(specification: String!): Workflow!
+  patchWorkflowSpecification(id: String!, patch: String!): Workflow
 }
 `, BuiltIn: false},
-	{Name: "internal/mainserver/graphql/schema/workflow.graphqls", Input: `type Workflow {
+	{Name: "../gigamono/pkg/services/graphql/schema/workflow.graphqls", Input: `type Workflow {
   id: String!
   name: String!
   specification: String!
   isActive: Boolean
-  creatorId: String!
-}
-
-input WorkflowInput {
-  name: String!
-  specification: String!
+  creatorID: String!
 }
 `, BuiltIn: false},
 }
@@ -266,33 +261,42 @@ func (ec *executionContext) dir_tag_args(ctx context.Context, rawArgs map[string
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_activateWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["workflowID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
+	if tmp, ok := rawArgs["specification"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("specification"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflowID"] = arg0
+	args["specification"] = arg0
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_patchWorkflowSpecification_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.WorkflowInput
-	if tmp, ok := rawArgs["workflow"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflow"))
-		arg0, err = ec.unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx, tmp)
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflow"] = arg0
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["patch"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("patch"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["patch"] = arg1
 	return args, nil
 }
 
@@ -315,14 +319,14 @@ func (ec *executionContext) field_Query_getWorkflow_args(ctx context.Context, ra
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["workflowID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflowID"))
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["workflowID"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -389,7 +393,7 @@ func (ec *executionContext) _Mutation_createWorkflow(ctx context.Context, field 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["workflow"].(model.WorkflowInput))
+		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["specification"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -401,12 +405,12 @@ func (ec *executionContext) _Mutation_createWorkflow(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Workflow)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflow(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_activateWorkflow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_patchWorkflowSpecification(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -423,7 +427,7 @@ func (ec *executionContext) _Mutation_activateWorkflow(ctx context.Context, fiel
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_activateWorkflow_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_patchWorkflowSpecification_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -431,21 +435,18 @@ func (ec *executionContext) _Mutation_activateWorkflow(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ActivateWorkflow(rctx, args["workflowID"].(string))
+		return ec.resolvers.Mutation().PatchWorkflowSpecification(rctx, args["id"].(string), args["patch"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.Workflow)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflow(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -473,7 +474,7 @@ func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetWorkflow(rctx, args["workflowID"].(string))
+		return ec.resolvers.Query().GetWorkflow(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -698,7 +699,7 @@ func (ec *executionContext) _Workflow_isActive(ctx context.Context, field graphq
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Workflow_creatorId(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
+func (ec *executionContext) _Workflow_creatorID(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1820,34 +1821,6 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputWorkflowInput(ctx context.Context, obj interface{}) (model.WorkflowInput, error) {
-	var it model.WorkflowInput
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "specification":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("specification"))
-			it.Specification, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -1876,11 +1849,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "activateWorkflow":
-			out.Values[i] = ec._Mutation_activateWorkflow(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		case "patchWorkflowSpecification":
+			out.Values[i] = ec._Mutation_patchWorkflowSpecification(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1964,8 +1934,8 @@ func (ec *executionContext) _Workflow(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "isActive":
 			out.Values[i] = ec._Workflow_isActive(ctx, field, obj)
-		case "creatorId":
-			out.Values[i] = ec._Workflow_creatorId(ctx, field, obj)
+		case "creatorID":
+			out.Values[i] = ec._Workflow_creatorID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2269,11 +2239,6 @@ func (ec *executionContext) marshalNWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamo
 	return ec._Workflow(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx context.Context, v interface{}) (model.WorkflowInput, error) {
-	res, err := ec.unmarshalInputWorkflowInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
 	return ec.___Directive(ctx, sel, &v)
 }
@@ -2549,6 +2514,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamonoᚑworkflowᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflow(ctx context.Context, sel ast.SelectionSet, v *model.Workflow) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Workflow(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
