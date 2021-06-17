@@ -54,11 +54,12 @@ type ComplexityRoot struct {
 	}
 
 	Workflow struct {
-		CreatorID     func(childComplexity int) int
-		ID            func(childComplexity int) int
-		IsActive      func(childComplexity int) int
-		Name          func(childComplexity int) int
-		Specification func(childComplexity int) int
+		CreatorID         func(childComplexity int) int
+		ID                func(childComplexity int) int
+		IsActive          func(childComplexity int) int
+		Name              func(childComplexity int) int
+		Specification     func(childComplexity int) int
+		SpecificationPath func(childComplexity int) int
 	}
 }
 
@@ -156,6 +157,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Workflow.Specification(childComplexity), true
 
+	case "Workflow.specificationPath":
+		if e.complexity.Workflow.SpecificationPath == nil {
+			break
+		}
+
+		return e.complexity.Workflow.SpecificationPath(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -235,6 +243,7 @@ type Mutation {
   id: String!
   name: String!
   specification: String!
+  specificationPath: String!
   isActive: Boolean
   creatorID: String!
 }
@@ -651,6 +660,41 @@ func (ec *executionContext) _Workflow_specification(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Specification, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workflow_specificationPath(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workflow",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SpecificationPath, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1929,6 +1973,11 @@ func (ec *executionContext) _Workflow(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "specification":
 			out.Values[i] = ec._Workflow_specification(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "specificationPath":
+			out.Values[i] = ec._Workflow_specificationPath(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

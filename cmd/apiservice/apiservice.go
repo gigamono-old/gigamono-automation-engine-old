@@ -4,21 +4,21 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/logs"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/webhookservice"
+	"github.com/gigamono/gigamono-workflow-engine/pkg/apiservice"
 )
 
 func main() {
 	// Initialises app.
-	app, err := inits.NewApp(inits.WorkflowEngineWebhookService)
+	app, err := inits.NewApp(inits.WorkflowEngineAPIService)
 	if err != nil {
-		logs.FmtPrintln("initialising webhook service:", err)
+		logs.FmtPrintln("initialising api service:", err)
 		return
 	}
 
 	// Start main server.
-	server, err := webhookservice.NewWebhookService(app)
+	server, err := apiservice.NewAPIService(app)
 	if err != nil {
-		logs.FmtPrintln("creating webhook service:", err)
+		logs.FmtPrintln("creating api service:", err)
 	}
 
 	// Listen on port.

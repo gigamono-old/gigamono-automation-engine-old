@@ -1,4 +1,4 @@
-package webhookservice
+package apiservice
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,22 +7,22 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 )
 
-// WebhookService is a grpc server with an engine.
-type WebhookService struct {
+// APIService is a grpc server with an engine.
+type APIService struct {
 	inits.App
 	GinEngine *gin.Engine
 }
 
-// NewWebhookService creates a new server instance.
-func NewWebhookService(app inits.App) (WebhookService, error) {
-	return WebhookService{
+// NewAPIService creates a new server instance.
+func NewAPIService(app inits.App) (APIService, error) {
+	return APIService{
 		App:       app,
 		GinEngine: gin.Default(),
 	}, nil
 }
 
 // Listen makes the server listen on specified port.
-func (service *WebhookService) Listen() error {
+func (service *APIService) Listen() error {
 	// Run servers concurrently and sync errors.
 	grp := new(errgroup.Group)
 	grp.Go(func() error { return service.grpcServe() })

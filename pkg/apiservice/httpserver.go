@@ -1,4 +1,4 @@
-package webhookservice
+package apiservice
 
 import (
 	"fmt"
@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-func (service *WebhookService) httpServe() error {
+func (service *APIService) httpServe() error {
 	listener, err := net.Listen(
 		"tcp",
 		fmt.Sprint(
 			":",
-			service.Config.Services.WorkflowEngine.WebhookService.Ports.Public,
+			service.Config.Services.WorkflowEngine.APIService.Ports.Public,
 		),
 	)
 	if err != nil {
@@ -28,4 +28,4 @@ func (service *WebhookService) httpServe() error {
 	return httpServer.Serve(listener)
 }
 
-func (service *WebhookService) setRoutes() {}
+func (service *APIService) setRoutes() {}
