@@ -54,12 +54,12 @@ type ComplexityRoot struct {
 	}
 
 	Workflow struct {
-		CreatorID         func(childComplexity int) int
-		ID                func(childComplexity int) int
-		IsActive          func(childComplexity int) int
-		Name              func(childComplexity int) int
-		Specification     func(childComplexity int) int
-		SpecificationPath func(childComplexity int) int
+		CreatorID            func(childComplexity int) int
+		ID                   func(childComplexity int) int
+		IsActive             func(childComplexity int) int
+		Name                 func(childComplexity int) int
+		Specification        func(childComplexity int) int
+		SpecificationFileURL func(childComplexity int) int
 	}
 }
 
@@ -157,12 +157,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Workflow.Specification(childComplexity), true
 
-	case "Workflow.specificationPath":
-		if e.complexity.Workflow.SpecificationPath == nil {
+	case "Workflow.specificationFileURL":
+		if e.complexity.Workflow.SpecificationFileURL == nil {
 			break
 		}
 
-		return e.complexity.Workflow.SpecificationPath(childComplexity), true
+		return e.complexity.Workflow.SpecificationFileURL(childComplexity), true
 
 	}
 	return 0, false
@@ -243,7 +243,7 @@ type Mutation {
   id: String!
   name: String!
   specification: String!
-  specificationPath: String!
+  specificationFileURL: String!
   isActive: Boolean
   creatorID: String!
 }
@@ -676,7 +676,7 @@ func (ec *executionContext) _Workflow_specification(ctx context.Context, field g
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Workflow_specificationPath(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
+func (ec *executionContext) _Workflow_specificationFileURL(ctx context.Context, field graphql.CollectedField, obj *model.Workflow) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -694,7 +694,7 @@ func (ec *executionContext) _Workflow_specificationPath(ctx context.Context, fie
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SpecificationPath, nil
+		return obj.SpecificationFileURL, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1976,8 +1976,8 @@ func (ec *executionContext) _Workflow(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "specificationPath":
-			out.Values[i] = ec._Workflow_specificationPath(ctx, field, obj)
+		case "specificationFileURL":
+			out.Values[i] = ec._Workflow_specificationFileURL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

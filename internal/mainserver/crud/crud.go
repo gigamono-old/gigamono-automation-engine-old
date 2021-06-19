@@ -16,11 +16,11 @@ func CreateWorkflow(ctx context.Context, app *inits.App, specification string) (
 	}
 
 	return &gqlModel.Workflow{
-		ID:                workflow.ID.String(),
-		Name:              workflow.Name,
-		IsActive:          &workflow.IsActive,
-		CreatorID:         workflow.CreatorID.String(),
-		SpecificationPath: workflow.SpecificationPath,
+		ID:                   workflow.ID.String(),
+		Name:                 workflow.Name,
+		IsActive:             &workflow.IsActive,
+		CreatorID:            workflow.CreatorID.String(),
+		SpecificationFileURL: workflow.SpecificationFileURL,
 	}, nil
 }
 
@@ -32,10 +32,10 @@ func GetWorkflow(ctx context.Context, app *inits.App, workflowID string) (*gqlMo
 	}
 
 	return &gqlModel.Workflow{
-		ID:                workflow.ID.String(),
-		Name:              workflow.Name,
-		IsActive:          &workflow.IsActive,
-		CreatorID:         workflow.CreatorID.String(),
-		SpecificationPath: workflow.SpecificationPath,
+		ID:                   workflow.ID.String(),
+		Name:                 workflow.Name,
+		IsActive:             &workflow.IsActive,
+		CreatorID:            workflow.CreatorID.String(),
+		SpecificationFileURL: workflow.SpecificationFileURL,
 	}, nil
 }

@@ -11,12 +11,12 @@ import (
 )
 
 type Workflow struct {
-	ID                string `json:"id" `
-	Name              string `json:"name" `
-	Specification     string `json:"specification" `
-	SpecificationPath string `json:"specificationPath" `
-	IsActive          *bool  `json:"isActive" `
-	CreatorID         string `json:"creatorID" `
+	ID                   string `json:"id" `
+	Name                 string `json:"name" `
+	Specification        string `json:"specification" `
+	SpecificationFileURL string `json:"specificationFileURL" `
+	IsActive             *bool  `json:"isActive" `
+	CreatorID            string `json:"creatorID" `
 }
 type Directive struct {
 	Name        string                      `json:"name" `
