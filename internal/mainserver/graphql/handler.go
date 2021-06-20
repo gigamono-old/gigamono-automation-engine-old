@@ -4,8 +4,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
 
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/generated"
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/resolver"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/generated"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/resolver"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/services/graphql/directives"
 	"github.com/gigamono/gigamono/pkg/services/graphql/middleware"

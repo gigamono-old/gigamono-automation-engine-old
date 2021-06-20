@@ -15,7 +15,7 @@ func (supervisor *RunnableSupervisor) grpcServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			supervisor.Config.Services.WorkflowEngine.RunnableSupervisor.Ports.Private,
+			supervisor.Config.Services.AutomationEngine.RunnableSupervisor.Ports.Private,
 		),
 	)
 	if err != nil {
@@ -25,7 +25,7 @@ func (supervisor *RunnableSupervisor) grpcServe() error {
 	grpcServer := grpc.NewServer() // Create a gRPC service.
 
 	// Register gRPC service.
-	generated.RegisterWorkflowRunnableSupervisorServer(grpcServer, supervisor)
+	generated.RegisterAutomationEngineRunnableSupervisorServer(grpcServer, supervisor)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener) // Listen for requests.

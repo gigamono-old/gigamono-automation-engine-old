@@ -4,12 +4,12 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/logs"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/apiservice"
+	"github.com/gigamono/gigamono-automation-engine/pkg/apiservice"
 )
 
 func main() {
 	// Initialises app.
-	app, err := inits.NewApp(inits.WorkflowEngineAPIService)
+	app, err := inits.NewApp(inits.AutomationEngineAPIService)
 	if err != nil {
 		logs.FmtPrintln("initialising api service:", err)
 		return

@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql"
 	"github.com/gigamono/gigamono/pkg/services/rest/middleware"
 	"github.com/gigamono/gigamono/pkg/services/rest/routes"
 )
@@ -13,7 +13,7 @@ import (
 func (server *MainServer) httpServe() error {
 	listener, err := net.Listen(
 		"tcp",
-		fmt.Sprint(":", server.Config.Services.WorkflowEngine.MainServer.Ports.Public),
+		fmt.Sprint(":", server.Config.Services.AutomationEngine.MainServer.Ports.Public),
 	)
 	if err != nil {
 		return err

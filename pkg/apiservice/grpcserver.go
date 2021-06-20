@@ -15,7 +15,7 @@ func (service *APIService) grpcServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			service.Config.Services.WorkflowEngine.APIService.Ports.Private,
+			service.Config.Services.AutomationEngine.APIService.Ports.Private,
 		),
 	)
 	if err != nil {
@@ -25,7 +25,7 @@ func (service *APIService) grpcServe() error {
 	grpcServer := grpc.NewServer() // Create a gRPC service.
 
 	// Register gRPC service.
-	generated.RegisterWorkflowAPIServiceServer(grpcServer, service)
+	generated.RegisterAutomationEngineAPIServiceServer(grpcServer, service)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener) // Listen for requests.

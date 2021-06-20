@@ -4,7 +4,7 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/logs"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/runnablesupervisor"
+	"github.com/gigamono/gigamono-automation-engine/pkg/runnablesupervisor"
 )
 
 func main() {

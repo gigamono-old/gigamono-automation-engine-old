@@ -11,7 +11,7 @@ func (service *APIService) httpServe() error {
 		"tcp",
 		fmt.Sprint(
 			":",
-			service.Config.Services.WorkflowEngine.APIService.Ports.Public,
+			service.Config.Services.AutomationEngine.APIService.Ports.Public,
 		),
 	)
 	if err != nil {

@@ -13,7 +13,7 @@ import (
 func (server *MainServer) grpcServe() error {
 	listener, err := net.Listen(
 		"tcp",
-		fmt.Sprint(":", server.Config.Services.WorkflowEngine.MainServer.Ports.Private),
+		fmt.Sprint(":", server.Config.Services.AutomationEngine.MainServer.Ports.Private),
 	)
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func (server *MainServer) grpcServe() error {
 	grpcServer := grpc.NewServer() // Create a gRPC server.
 
 	// Register gRPC service.
-	generated.RegisterWorkflowMainServerServer(grpcServer, server)
+	generated.RegisterAutomationEngineMainServerServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener) // Listen for requests.

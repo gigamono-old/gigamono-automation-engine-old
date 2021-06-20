@@ -4,12 +4,12 @@ import (
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/logs"
 
-	"github.com/gigamono/gigamono-workflow-engine/pkg/mainserver"
+	"github.com/gigamono/gigamono-automation-engine/pkg/mainserver"
 )
 
 func main() {
 	// Initialises app.
-	app, err := inits.NewApp(inits.WorkflowEngineMainServer)
+	app, err := inits.NewApp(inits.AutomationEngineMainServer)
 	if err != nil {
 		logs.FmtPrintln("initialising main server:", err)
 		return

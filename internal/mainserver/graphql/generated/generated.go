@@ -12,7 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )

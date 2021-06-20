@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/crud"
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/generated"
-	"github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/crud"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/generated"
+	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/model"
 )
 
 func (r *mutationResolver) CreateWorkflow(ctx context.Context, specification string) (*model.Workflow, error) {

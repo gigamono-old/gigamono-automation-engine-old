@@ -1,4 +1,4 @@
-module github.com/gigamono/gigamono-workflow-engine
+module github.com/gigamono/gigamono-automation-engine
 
 go 1.15
 

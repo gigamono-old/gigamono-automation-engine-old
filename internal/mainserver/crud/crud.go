@@ -3,7 +3,7 @@ package crud
 import (
 	"context"
 
-	gqlModel "github.com/gigamono/gigamono-workflow-engine/internal/mainserver/graphql/model"
+	gqlModel "github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/model"
 	"github.com/gigamono/gigamono/pkg/inits"
 	"github.com/gigamono/gigamono/pkg/services/crud"
 )
