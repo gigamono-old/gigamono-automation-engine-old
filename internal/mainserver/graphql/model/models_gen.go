@@ -18,6 +18,9 @@ type Workflow struct {
 	CreatorID            string `json:"creatorID" `
 	AutomationID         string `json:"automationID" `
 }
+type WorkflowInput struct {
+	Specification string `json:"specification" `
+}
 type Directive struct {
 	Name        string                      `json:"name" `
 	Description *string                     `json:"description" `

@@ -1,0 +1,13 @@
+type Workflow {
+  id: String!
+  name: String!
+  specification: String!
+  specificationFileURL: String!
+  creatorID: String!
+  automationID: String!
+}
+
+
+input WorkflowInput {
+  specification: String!
+}

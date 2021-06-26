@@ -45,12 +45,12 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateWorkflow             func(childComplexity int, specification string, automationID string) int
+		CreateWorkflow             func(childComplexity int, automationID string, workflow model.WorkflowInput) int
 		PatchWorkflowSpecification func(childComplexity int, id string, patch string) int
 	}
 
 	Query struct {
-		GetWorkflow func(childComplexity int, id string) int
+		Workflow func(childComplexity int, id string) int
 	}
 
 	Workflow struct {
@@ -64,11 +64,11 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateWorkflow(ctx context.Context, specification string, automationID string) (*model.Workflow, error)
+	CreateWorkflow(ctx context.Context, automationID string, workflow model.WorkflowInput) (*model.Workflow, error)
 	PatchWorkflowSpecification(ctx context.Context, id string, patch string) (*model.Workflow, error)
 }
 type QueryResolver interface {
-	GetWorkflow(ctx context.Context, id string) (*model.Workflow, error)
+	Workflow(ctx context.Context, id string) (*model.Workflow, error)
 }
 
 type executableSchema struct {
@@ -96,7 +96,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["specification"].(string), args["automationID"].(string)), true
+		return e.complexity.Mutation.CreateWorkflow(childComplexity, args["automationID"].(string), args["workflow"].(model.WorkflowInput)), true
 
 	case "Mutation.patchWorkflowSpecification":
 		if e.complexity.Mutation.PatchWorkflowSpecification == nil {
@@ -110,17 +110,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.PatchWorkflowSpecification(childComplexity, args["id"].(string), args["patch"].(string)), true
 
-	case "Query.getWorkflow":
-		if e.complexity.Query.GetWorkflow == nil {
+	case "Query.workflow":
+		if e.complexity.Query.Workflow == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getWorkflow_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_workflow_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetWorkflow(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Workflow(childComplexity, args["id"].(string)), true
 
 	case "Workflow.automationID":
 		if e.complexity.Workflow.AutomationID == nil {
@@ -231,21 +231,26 @@ var sources = []*ast.Source{
 	{Name: "internal/mainserver/graphql/schema/main.graphqls", Input: `directive @tag(validate: String) on INPUT_FIELD_DEFINITION
 
 type Query {
-  getWorkflow(id: String!): Workflow!
+  workflow(id: String!): Workflow!
 }
 
 type Mutation {
-  createWorkflow(specification: String!, automationID: String!): Workflow!
+  createWorkflow(automationID: String!, workflow: WorkflowInput!): Workflow!
   patchWorkflowSpecification(id: String!, patch: String!): Workflow
 }
 `, BuiltIn: false},
-	{Name: "../gigamono/pkg/services/graphql/schema/workflow.graphqls", Input: `type Workflow {
+	{Name: "internal/mainserver/graphql/schema/workflow.graphqls", Input: `type Workflow {
   id: String!
   name: String!
   specification: String!
   specificationFileURL: String!
   creatorID: String!
   automationID: String!
+}
+
+
+input WorkflowInput {
+  specification: String!
 }
 `, BuiltIn: false},
 }
@@ -274,23 +279,23 @@ func (ec *executionContext) field_Mutation_createWorkflow_args(ctx context.Conte
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["specification"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("specification"))
+	if tmp, ok := rawArgs["automationID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("automationID"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["specification"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["automationID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("automationID"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+	args["automationID"] = arg0
+	var arg1 model.WorkflowInput
+	if tmp, ok := rawArgs["workflow"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workflow"))
+		arg1, err = ec.unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑautomationᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["automationID"] = arg1
+	args["workflow"] = arg1
 	return args, nil
 }
 
@@ -333,7 +338,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getWorkflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_workflow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -411,7 +416,7 @@ func (ec *executionContext) _Mutation_createWorkflow(ctx context.Context, field 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["specification"].(string), args["automationID"].(string))
+		return ec.resolvers.Mutation().CreateWorkflow(rctx, args["automationID"].(string), args["workflow"].(model.WorkflowInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -467,7 +472,7 @@ func (ec *executionContext) _Mutation_patchWorkflowSpecification(ctx context.Con
 	return ec.marshalOWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamonoᚑautomationᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflow(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_workflow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -484,7 +489,7 @@ func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getWorkflow_args(ctx, rawArgs)
+	args, err := ec.field_Query_workflow_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -492,7 +497,7 @@ func (ec *executionContext) _Query_getWorkflow(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetWorkflow(rctx, args["id"].(string))
+		return ec.resolvers.Query().Workflow(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1877,6 +1882,26 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputWorkflowInput(ctx context.Context, obj interface{}) (model.WorkflowInput, error) {
+	var it model.WorkflowInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "specification":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("specification"))
+			it.Specification, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -1933,7 +1958,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "getWorkflow":
+		case "workflow":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1941,7 +1966,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getWorkflow(ctx, field)
+				res = ec._Query_workflow(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -2301,6 +2326,11 @@ func (ec *executionContext) marshalNWorkflow2ᚖgithubᚗcomᚋgigamonoᚋgigamo
 		return graphql.Null
 	}
 	return ec._Workflow(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNWorkflowInput2githubᚗcomᚋgigamonoᚋgigamonoᚑautomationᚑengineᚋinternalᚋmainserverᚋgraphqlᚋmodelᚐWorkflowInput(ctx context.Context, v interface{}) (model.WorkflowInput, error) {
+	res, err := ec.unmarshalInputWorkflowInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

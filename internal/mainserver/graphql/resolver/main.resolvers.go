@@ -12,15 +12,15 @@ import (
 	"github.com/gigamono/gigamono-automation-engine/internal/mainserver/graphql/model"
 )
 
-func (r *mutationResolver) CreateWorkflow(ctx context.Context, specification string, automationID string) (*model.Workflow, error) {
-	return crud.CreateWorkflow(ctx, r.App, specification, automationID)
+func (r *mutationResolver) CreateWorkflow(ctx context.Context, automationID string, workflow model.WorkflowInput) (*model.Workflow, error) {
+	return crud.CreateWorkflow(ctx, r.App, &automationID, &workflow)
 }
 
 func (r *mutationResolver) PatchWorkflowSpecification(ctx context.Context, id string, patch string) (*model.Workflow, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) GetWorkflow(ctx context.Context, id string) (*model.Workflow, error) {
+func (r *queryResolver) Workflow(ctx context.Context, id string) (*model.Workflow, error) {
 	return crud.GetWorkflow(ctx, r.App, id)
 }
 
