@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Initialises app.
-	app, err := inits.NewApp(inits.WorkflowEngineRunnableSupervisor)
+	app, err := inits.NewApp(inits.AutomationEngineRunnableSupervisor)
 	if err != nil {
 		logs.FmtPrintln("initialising runnable supervisor:", err)
 		return
